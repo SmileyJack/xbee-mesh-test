@@ -40,12 +40,12 @@ def data_rcvd_callback(xbee_message):
     split_id_and_message = data.split(",")
     print(data)
     print(split_id_and_message[1])
-    response_time = send_log.get(int(split_id_and_message[1])) - received
+    response_time = received - send_log.get(int(split_id_and_message[1]))
 
     new_tuple = (data, response_time)
 
     if (node_id not in receive_log.keys()):
-        response_log[node_id] = new_list
+        response_log[node_id] = new_tuple
     else:
         response_log.get(node_id).append(new_tuple)
     
