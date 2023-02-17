@@ -22,7 +22,7 @@ get_nodes_on_network()
 
 def ack(data):
         node_id = ham.get_node_id()
-        ham.send_data_broadcast(node_id + "," + data)
+        ham.send_data_broadcast(node_id + "-" + data)
 
 def data_rcvd_callback(xbee_message):
         address = xbee_message.remote_device.get_64bit_addr()
