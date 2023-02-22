@@ -46,7 +46,6 @@ def calculate_and_record_message_and_response_time(data, received, node_id):
     response_time = received - send_log.get(int(split_id_from_message[1]))
 
     new_response_from_agent = (data, response_time)
-    print(new_response_from_agent)
 
     if (node_id not in response_log.keys()):
         new_agent = Agent(node_id, [new_response_from_agent])
@@ -73,8 +72,9 @@ def main():
     global response_log
     global agent_list
 
-    for i in range(10):
-        print(i)
+    for i in range(1000):
+        if (i % 100 == 0):
+            print(i)
         ground.send_data_broadcast(str(i))
         sent = millis()
         send_log[i] = sent
@@ -83,7 +83,7 @@ def main():
     grab_average_agent_response_time()
     for agent in agent_list:
         print(str(agent.node_id) + " " + str(agent.average_response_time))
-    #print(response_log.get("ham1").responses)
+    
 
 
 if __name__ == "__main__":
