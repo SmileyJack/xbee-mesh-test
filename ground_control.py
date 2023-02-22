@@ -80,7 +80,7 @@ def main():
         send_log[i] = sent
 
     time.sleep(2)
-    
+    grab_average_agent_response_time()
     for agent in agent_list:
         print(str(agent.node_id) + " " + str(agent.average_response_time))
     #print(response_log.get("ham1").responses)
