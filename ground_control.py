@@ -8,8 +8,9 @@ from agent import Agent
 
 response_log = dict()
 send_log = dict()
+agent_list = []
 
-ground = XBeeDevice('/dev/tty.usbserial-D306E201', 57600)
+ground = XBeeDevice('/dev/tty.usbserial-D306E1ZP', 57600)
 ground.open()
 xnet = ground.get_network()
 
@@ -27,7 +28,6 @@ def get_nodes_on_network():
 get_nodes_on_network()
 
 
-
 def data_rcvd_callback(xbee_message):
     received = millis()
     address = xbee_message.remote_device.get_64bit_addr()
@@ -39,11 +39,9 @@ def data_rcvd_callback(xbee_message):
 def calculate_and_record_message_and_response_time(data, received, node_id):
     global response_log
     global send_log
+    global agent_list
 
     split_id_from_message = data.split("-")
-
-    print(data)
-    print(split_id_from_message[1])
 
     response_time = received - send_log.get(int(split_id_from_message[1]))
 
@@ -51,26 +49,41 @@ def calculate_and_record_message_and_response_time(data, received, node_id):
     print(new_response_from_agent)
 
     if (node_id not in response_log.keys()):
-        response_log[node_id] = Agent(node_id, [new_response_from_agent])
+        new_agent = Agent(node_id, [new_response_from_agent])
+        response_log[node_id] = new_agent
+        agent_list.append(new_agent)
+
     else:
         current_list_of_responses = response_log.get(node_id).responses
         current_list_of_responses.append(new_response_from_agent)
-    
+
+def grab_average_agent_response_time():
+    global agent_list
+
+    for agent in agent_list:
+        sum = 0
+        for num_records in range(len(agent.responses)):
+             sum += agent.responses[1]
+        agent.average_response_time = sum / len(agent.responses)
 
 ground.add_data_received_callback(data_rcvd_callback)
 
 def main():
     global send_log
     global response_log
+    global agent_list
 
     for i in range(10):
-        time.sleep(0.5)
+        print(i)
         ground.send_data_broadcast(str(i))
         sent = millis()
         send_log[i] = sent
 
-
-    print(response_log.get("ham1").responses)
+    time.sleep(2)
+    
+    for agent in agent_list:
+        print(str(agent.node_id) + " " + str(agent.average_response_time))
+    #print(response_log.get("ham1").responses)
 
 
 if __name__ == "__main__":
