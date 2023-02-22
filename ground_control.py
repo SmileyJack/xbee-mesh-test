@@ -7,7 +7,6 @@ from digi.xbee.models.address import XBee64BitAddress
 from agent import Agent
 
 response_log = dict()
-receive_log = dict()
 send_log = dict()
 
 ground = XBeeDevice('/dev/tty.usbserial-D306E201', 57600)
@@ -36,10 +35,9 @@ def data_rcvd_callback(xbee_message):
     data = xbee_message.data.decode("utf8")
     calculate_and_record_message_and_response_time(data, received, node_id)
 
-    
+
 def calculate_and_record_message_and_response_time(data, received, node_id):
     global response_log
-    global receive_log
     global send_log
 
     split_id_from_message = data.split("-")
@@ -52,7 +50,7 @@ def calculate_and_record_message_and_response_time(data, received, node_id):
     new_response_from_agent = (data, response_time)
     print(new_response_from_agent)
 
-    if (node_id not in receive_log.keys()):
+    if (node_id not in response_log.keys()):
         response_log[node_id] = Agent(node_id, [new_response_from_agent])
     else:
         current_list_of_responses = response_log.get(node_id).responses
