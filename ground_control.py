@@ -63,7 +63,7 @@ def grab_average_agent_response_time():
     for agent in agent_list:
         sum = 0
         for num_records in range(len(agent.responses)):
-             sum += agent.responses[1]
+             sum += agent.responses[num_records][1]
         agent.average_response_time = sum / len(agent.responses)
 
 ground.add_data_received_callback(data_rcvd_callback)
