@@ -27,13 +27,22 @@ def get_nodes_on_network():
 
 get_nodes_on_network()
 
+def poll_network():
+    node_ids = []
+    nodes = xnet.get_connections()
+
+    for node in nodes:
+        node_ids.append(node.get_node_id())
+
+    print(node_ids)
+
 
 def data_rcvd_callback(xbee_message):
     received = millis()
     address = xbee_message.remote_device.get_64bit_addr()
     node_id = xnet.get_device_by_64(address).get_node_id()
     data = xbee_message.data.decode("utf8")
-    calculate_and_record_message_and_response_time(data, received, node_id)
+    # calculate_and_record_message_and_response_time(data, received, node_id)
 
 
 def calculate_and_record_message_and_response_time(data, received, node_id):
@@ -67,23 +76,51 @@ def grab_average_agent_response_time():
 
 ground.add_data_received_callback(data_rcvd_callback)
 
+def show_ui():
+    print("Remote agent commands:")
+    print("(a) Begin transmission")
+    print("(b) Crash into a tree")
+    print("(c) Deliver me Taco Bell")
+    print("(d) View nodes on network")
+
+def request_input():
+    begin_transmission_command = "g"
+    crash_into_tree_command = "c"
+    deliver_taco_bell_command = "t"
+
+    send = input("Send information? (y/n) ")
+    while send == 'y':
+        show_ui()
+        choice = input("(e) Refresh network\n")
+
+        if (choice.lower() == 'a'):
+            ground.send_data_broadcast(begin_transmission_command)
+
+        elif (choice.lower() == 'b'):
+            send_data_and_display_time_to_send(crash_into_tree_command)
+
+        elif (choice.lower() == 'c'):
+            send_data_and_display_time_to_send(deliver_taco_bell_command)
+
+        elif (choice.lower() == 'd'):
+            poll_network()
+
+        elif (choice.lower() == 'e'):
+            get_nodes_on_network()
+
+        else:
+            print("Enter a valid choice")
+
+        send = input("Send more information? (y/n) ")
+
 def main():
     global send_log
     global response_log
     global agent_list
 
-    for i in range(100):
-        time.sleep(0.1)
-        if (i % 100 == 0):
-            print(i)
-        ground.send_data_broadcast(str(i))
-        sent = millis()
-        send_log[i] = sent
-
-    time.sleep(2)
-    grab_average_agent_response_time()
-    for agent in agent_list:
-        print(str(agent.node_id) + " " + str(agent.average_response_time))
+    while True:
+        request_input()
+    
     
 
 
