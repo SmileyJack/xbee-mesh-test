@@ -42,7 +42,6 @@ def data_rcvd_callback(xbee_message):
     address = xbee_message.remote_device.get_64bit_addr()
     node_id = xnet.get_device_by_64(address).get_node_id()
     data = xbee_message.data.decode("utf8")
-    # calculate_and_record_message_and_response_time(data, received, node_id)
 
 
 def calculate_and_record_message_and_response_time(data, received, node_id):
